@@ -1,0 +1,42 @@
+<script>
+    // Defina a lista de fotos
+    var fotos = <%= raw @list_fotos.to_json %>; // Certifique-se de que @list_fotos esteja corretamente definida no Rails
+
+    // Função para trocar a foto em intervalos regulares
+    var index = 0;
+    function trocarFoto() {
+        document.getElementById("foto").src = fotos[index];
+        index = (index + 1) % fotos.length; // Avança para a próxima foto (volta para a primeira quando atinge o final da lista)
+    }
+
+    // Inicie a troca de fotos quando a página carregar
+    window.onload = function() {
+        trocarFoto(); // Inicie imediatamente
+        setInterval(trocarFoto, 3000); // Troque a cada 3 segundos (ajuste conforme necessário)
+    };
+</script>
+
+<style>
+    #foto-container {
+        text-align: center;
+    }
+
+    #foto {
+        width: 600px; 
+        height: 900px; 
+        object-fit: cover; 
+    }
+
+    body{
+        background-color: #8C8C8C;
+    }
+
+
+
+</style>
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <img id="foto" src="assets/loading.webp" alt="Sua Imagem" class="img-fluid">
+</div>
+
+

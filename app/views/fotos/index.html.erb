@@ -1,0 +1,92 @@
+<style>
+    body{
+        background-color: #cdf7ff;
+    }
+</style>
+
+<h1>Minhas fotos</h1>
+<p>Veja, exclua e/ou altere a ordem das fotos</p>
+
+<script>
+
+    function trocarImgs(src, dst){
+        // Encontre os elementos das imagens pelo ID
+        var src_image = document.getElementById(src);
+        var dst_image = document.getElementById(dst);
+
+        // Crie um clone da primeira imagem
+        var aux = src_image.cloneNode(true);
+
+        // Substitua a primeira imagem pelo clone da segunda imagem
+        src_image.parentNode.replaceChild(dst_image.cloneNode(true), src_image);
+
+        // Substitua a segunda imagem pelo clone da primeira imagem
+        dst_image.parentNode.replaceChild(aux, dst_image);
+    }
+
+    function trocar_baixo(index){
+        // The bottom can't go lower
+        if(index >= <%=@fotos.length%>-1) return 0;
+
+        var valor_atual = document.getElementById(`ordem-${index}`);
+        var valor_baixo = document.getElementById(`ordem-${index+1}`);
+
+        var aux = valor_atual.value;
+        valor_atual.value = valor_baixo.value;
+        valor_baixo.value = aux;
+
+        trocarImgs(`imagem-${index}`, `imagem-${index+1}`);
+
+    }
+
+    function trocar_cima(index){
+        // The top can't go higher
+        if(index <= 0) return 0;
+
+        var valor_atual = document.getElementById(`ordem-${index}`);
+        var valor_cima = document.getElementById(`ordem-${index-1}`);
+
+        var aux = valor_atual.value;
+        valor_atual.value = valor_cima.value;
+        valor_cima.value = aux;
+
+        trocarImgs(`imagem-${index}`, `imagem-${index-1}`);
+    }
+</script>
+
+
+<nav class="nav" style="background-color:white;">
+    <%= link_to "Novo", "/fotos/new", class: "nav-link" %>
+    <%= link_to "Carrosel", "/carrossel", class: "nav-link"%>
+</nav>
+
+<br>
+<br>
+<%= form_with(url: "fotos/ordem", method: :post) do |form| %>
+    <div class="row">
+        <% @fotos.each_with_index do |foto, index| %>
+            <div class="col-md-4" style="margin-bottom: 20px">
+                <div class="card">
+                    <a id="link-foto" href="<%=foto_path(foto)%>">
+                        <%= image_tag foto.imagem, class: "card-img-top", id: "imagem-#{index}", :style => "width: 100%; height: 300px;"%>
+                    </a>
+                    <div class="card-body">
+                        <%= form.hidden_field "lista_ordem[#{index}]", value: foto.ordem, id: "ordem-#{index}" %>
+
+                        <button onclick="trocar_cima(<%=index%>)"><</button>
+                        <button onclick="trocar_baixo(<%=index%>)">></button>
+
+                        <%= link_to "Excluir", foto_path(foto),method: :delete, 
+                        data: { confirm: "Tem certeza que deseja excluir esta foto?" } %>
+
+                    </div>
+                </div>
+            </div>
+            <br>
+        <% end %>
+    </div>
+
+    <%= form.submit%>
+<% end %>
+
+
